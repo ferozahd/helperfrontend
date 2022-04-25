@@ -1,0 +1,31 @@
+
+.bg-gray-50 {
+    --tw-bg-opacity: 1;
+    background-color: rgba(248, 250, 252, var(--tw-bg-opacity));
+  }
+  
+  .bg-gray-100 {
+    --tw-bg-opacity: 1;
+    background-color: rgba(241, 245, 249, var(--tw-bg-opacity));
+  }
+  
+  .bg-gray-200 {
+    --tw-bg-opacity: 1;
+    background-color: rgba(226, 232, 240, var(--tw-bg-opacity));
+  }
+  
+  .bg-gray-600 {
+    --tw-bg-opacity: 1;
+    background-color: rgba(71, 85, 105, var(--tw-bg-opacity));
+  }
+  
+  .bg-gray-700 {
+    --tw-bg-opacity: 1;
+    background-color: rgba(51, 65, 85, var(--tw-bg-opacity));
+  }
+  
+  .bg-gray-800 {
+    --tw-bg-opacity: 1;
+    background-color: rgba(30, 41, 59, var(--tw-bg-opacity));
+  }
+  

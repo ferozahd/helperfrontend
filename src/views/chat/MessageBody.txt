@@ -1,0 +1,158 @@
+import * as Fa from 'react-icons/fa'
+import { getMessage, postMessage } from 'api/message';
+import { useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
+
+
+const MessageBody = (props) => {
+
+    let activeUser = props.activeUser;
+    const messageBox = useRef();
+    const [page, setPage] = useState(0)
+    
+    const [messages, setMessages] = useState([]);
+    const [input, setInput] = useState();
+    const totalPages=props.initalMessage.totalPages;
+
+    useEffect(() => {
+       setMessages(props.initalMessage.content)
+       console.log(totalPages)
+       
+    })
+
+    // useEffect(() => {
+
+    //     getMessage(activeUser.senderId, page)
+    //         .then(res => {
+    //             setMessages(res.data.content.reverse())
+    //         })
+    //         .then(() => {
+    //             messageBox.current.scrollTo({
+    //                 top: messageBox.current.scrollTop + messageBox.current.clientHeight,
+    //                 behavior: 'auto'
+
+    //             });
+    //         })
+    // }, [])
+    useEffect(() => {
+        // console.log("mx page"+totalPages +" page "+page)
+        if (page < totalPages) {
+            getMessage(activeUser.senderId, page)
+                .then(res => {
+                    setMessages([...res.data.content.reverse(), ...messages])
+                })
+        }
+
+    }, [page, activeUser])
+
+
+    const messageSendhandlar = (e) => {
+        e.preventDefault()
+        postMessage(activeUser.senderId, input)
+            .then(res => {
+
+                if (res.status === 201) {
+
+                    const response = {
+                        createdAt: res.data.createdAt,
+                        message: res.data.message,
+                        messageId: res.data.messageId,
+                        userId: res.data.userId
+                    }
+
+
+                    setMessages([...messages, response])
+
+                }
+            })
+            .catch(err => {
+                console.log(err.response)
+            })
+    }
+    const onscrollHandlar = () => {
+
+        const scrollTop = messageBox.current.scrollTop;
+        if (scrollTop === 0) {
+            setPage(page + 1)
+        }
+
+
+    }
+    return (
+        <div className="w-full flex  h-screen">
+
+            <div className="w-8/12 pb-20 h-full bg-gray-200">
+                <div className="h-20 bg-white flex items-center gap-4 ">
+                    <span className=" ml-3 h-12 w-12 flex overflow-hidden rounded-full ">
+                        <img className="object-cover" src={activeUser.profilePicture} height="100%" width="100%" />
+                    </span>
+                    <p className="text-center text-2xl font-semibold">{activeUser.name}</p>
+                </div>
+                <div className="h-full">
+                    <div ref={messageBox} onScroll={onscrollHandlar} className="flex flex-col container h-full w-full pb-12 overflow-scroll  dark:bg-gray-800 rounded-lg shadow">
+                        {messages && messages.map((data, index) => {
+
+                            return (
+                                <div key={index}>
+                                    <div className={`mt-4 px-4 flex ${data.userId === 104 ? 'justify-end' : ''} items-center gap-3`}>
+                                        <div>
+                                            <span className={`px-2 h-10 justify-center items-center  rounded-tr-xl	rounded-tl-xl rounded-br-xl	w-90 flex ${data.userId === 104 ? 'bg-blue-600 text-white' : 'bg-white'} `}>
+                                                {data.message}
+                                            </span>
+                                            {/* <p className="text-xs font-semibold text-gray-600">{data.createdAt.replace("T", " ")}</p> */}
+                                            <p className="text-xs font-semibold text-gray-600">{data.createdAt}</p>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                            )
+                        })}
+                    </div>
+
+                </div>
+
+
+
+                <form onSubmit={messageSendhandlar} className="mt-[52px] bg-white fixed bottom-0  overflow-hidden w-8/12 h-16 px-3   flex justify-center items-center gap-3 text-xl">
+                    <Fa.FaSmile className="fa fa-smile-o" />
+                    <input placeholder="say ...." type="text" onChange={(e) => setInput(e.target.value)} className="h-10 w-full text-sm px-2 outline-none rounded-lg border" />
+                    <button type="submit"><Fa.FaArrowAltCircleUp className="fa fa-arrow-circle-o-up" /></button>
+                </form>
+            </div>
+
+
+            {/* Profile part */}
+            <div className="left-side w-4/12 h-full bg-blue-700">
+                <p className="text-center mt-5 text-2xl font-semibold text-white">Profile</p>
+                <div className="flex justify-center items-center mt-6">
+
+                    <div className="h-32 w-32 bg-cover rounded-full" style={{ backgroundImage: "url(" + activeUser.profilePicture + ")" }}  ></div>
+
+                </div>
+                <div className="mt-5 relative px-3"> <input placeholder="Daria Nikitina" type="text" className="h-16 w-full px-2 outline-none rounded-lg border-0" />
+                    <span className="absolute left-5 text-gray-500 top-0 font-semibold">Your Name</span>
+                </div>
+                <div className="mt-5 relative px-3">
+                    <select className="h-16 cursor-pointer font-semibold w-full px-2 outline-none rounded-lg border-0">
+                        <option className="bg-white hidden">Available</option>
+                        <option>Not Available</option>
+                        <option>Busy</option>
+                        <option>Calls Only</option>
+                    </select>
+                    <span className="absolute left-5 text-gray-500 top-0 font-semibold">Status</span>
+                </div>
+                <div className="mt-10 h-16 px-3 bg-blue-300 flex justify-center items-center text-xl gap-16">
+                    <div>
+                        Active Offer <br />
+                        Create a Offer
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    )
+}
+export default MessageBody;
